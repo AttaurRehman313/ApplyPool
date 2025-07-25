@@ -1,0 +1,380 @@
+<!-- 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Questionnaire UI</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom right, #3b3b3b, #1c1c1c);
+            color: #ffffff;
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-in-out forwards;
+        }
+        .container p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #ffffff;
+            word-wrap: break-word;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 1s forwards;
+        }
+        .container textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 20px;
+            padding: 15px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            background: #000000;
+            color: #ffffff;
+            resize: none;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 1.5s forwards;
+        }
+        .container textarea:focus {
+            background: #000000;
+        }
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p id="question">Are You Ready to Talk About Your Future? <i class="fas fa-smile"></i></p>
+        <textarea id="userAnswer" placeholder="Type here..." aria-label="Your Answer"></textarea>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const questionElement = document.getElementById("question");
+            const userAnswerElement = document.getElementById("userAnswer");
+
+            // Function to generate a UUID v4
+            function generateUUID() { // Public Domain/MIT
+                let d = new Date().getTime();//Timestamp
+                let d2 = (performance && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    let r = Math.random() * 16;//random number between 0 and 16
+                    if(d > 0){
+                        r = (d + r)%16 | 0;
+                        d = Math.floor(d/16);
+                    } else {
+                        r = (d2 + r)%16 | 0;
+                        d2 = Math.floor(d2/16);
+                    }
+                    return (c === 'x' ? r : (r&0x3|0x8)).toString(16);
+                });
+            }
+
+            // Generate a unique user ID each time the page loads
+            const userId = generateUUID();
+
+            userAnswerElement.addEventListener("keydown", function (event) {
+                if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault(); // Prevents adding a newline in the textarea
+
+                    const userAnswer = userAnswerElement.value.trim();
+
+                    if (userAnswer === "") {
+                        // Optionally, handle empty input
+                        alert("Please enter an answer before submitting.");
+                        return;
+                    }
+
+                    // Disable the textarea to prevent multiple submissions
+                    userAnswerElement.disabled = true;
+
+                    fetch("/api/questionnaire", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ user_id: userId, user_answer: userAnswer })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Check if appreciation_message exists in the response
+                        if (data.appreciation_message) {
+                            typeText(questionElement, data.appreciation_message);
+                        } else {
+                            console.error("Appreciation message not found in response:", data);
+                        }
+                        userAnswerElement.value = ""; // Clear the textarea after submission
+                    })
+                    .catch(error => {
+                        console.error("Error submitting answer:", error);
+                        alert("There was an error submitting your answer. Please try again.");
+                    })
+                    .finally(() => {
+                        // Re-enable the textarea regardless of success or failure
+                        userAnswerElement.disabled = false;
+                        userAnswerElement.focus();
+                    });
+                }
+            });
+
+            // Function to type out text like a typing animation
+            function typeText(element, text) {
+                element.textContent = "";
+                let i = 0;
+                const typingSpeed = 50; // Milliseconds per character
+
+                function type() {
+                    if (i < text.length) {
+                        element.textContent += text.charAt(i);
+                        i++;
+                        setTimeout(type, typingSpeed);
+                    }
+                }
+                type();
+            }
+        });
+    </script>
+</body>
+</html>  -->
+
+
+
+<!--############# """Button ADDED"""########### --> 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Questionnaire UI</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Existing CSS */
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom right, #3b3b3b, #1c1c1c);
+            color: #ffffff;
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-in-out forwards;
+        }
+        .container p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #ffffff;
+            word-wrap: break-word;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 1s forwards;
+        }
+        .container textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 20px;
+            padding: 15px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            background: #000000;
+            color: #ffffff;
+            resize: none;
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 1.5s forwards;
+        }
+        .container textarea:focus {
+            background: #000000;
+        }
+        .start-button {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            color: #ffffff;
+            background-color: #ff5722;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s;
+            animation: fadeIn 1s ease-in-out 2s forwards;
+        }
+        .start-button:hover {
+            background-color: #e64a19;
+            transform: scale(1.05);
+        }
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="startButton" class="start-button">Start</button>
+        <p id="question" style="display: none;">Loading question...</p>
+        <textarea id="userAnswer" placeholder="Type here..." aria-label="Your Answer" style="display: none;"></textarea>
+    </div>
+
+    <script>
+        // Function to type out text like a typing animation
+        function typeText(element, text) {
+            element.textContent = "";
+            let i = 0;
+            const typingSpeed = 30; // Milliseconds per character
+
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, typingSpeed);
+                }
+            }
+            type();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const startButton = document.getElementById("startButton");
+            const questionElement = document.getElementById("question");
+            const userAnswerElement = document.getElementById("userAnswer");
+            let userId;
+
+            // Start Button Click Event
+            startButton.addEventListener("click", function () {
+                // Generate a unique user ID
+                userId = `user_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+                
+                // Hide the start button and show question + textarea
+                startButton.style.display = "none";
+                questionElement.style.display = "block";
+                userAnswerElement.style.display = "block";
+
+                // Fetch the first question from the backend
+                fetch("/api/questionnaire", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ user_id: userId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Display the first question using typing animation
+                    typeText(questionElement, data.appreciation_message || "Welcome! Here is your first question.");
+                })
+                .catch(error => {
+                    console.error("Error loading question:", error);
+                    questionElement.textContent = "Error loading question. Please try again.";
+                });
+            });
+
+            // Event listener for submitting answers
+            userAnswerElement.addEventListener("keydown", function (event) {
+                if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault(); // Prevents adding a newline in the textarea
+
+                    const userAnswer = userAnswerElement.value.trim();
+
+                    if (userAnswer === "") {
+                        alert("Please enter an answer before submitting.");
+                        return;
+                    }
+
+                    userAnswerElement.disabled = true;
+
+                    fetch("/api/questionnaire", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ user_id: userId, user_answer: userAnswer })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        typeText(questionElement, data.appreciation_message || "Thank you!");
+                        userAnswerElement.value = ""; // Clear the textarea
+                    })
+                    .catch(error => {
+                        console.error("Error submitting answer:", error);
+                        alert("There was an error submitting your answer. Please try again.");
+                    })
+                    .finally(() => {
+                        userAnswerElement.disabled = false;
+                        userAnswerElement.focus();
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
